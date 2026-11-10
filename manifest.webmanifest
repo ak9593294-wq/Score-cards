@@ -1,0 +1,11 @@
+{
+  "name": "Score Cards",
+  "short_name": "Score Cards",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#17251f",
+  "theme_color": "#17251f",
+  "description": "امتیازشمار پاسوری برای بازی‌های دوستانه"
+}

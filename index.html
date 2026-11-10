@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17251f">
+<meta name="description" content="امتیازشمار پاسوری برای بازی‌های دونفره و تیمی">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Score Cards</title>
+<style>
+:root{--bg:#17251f;--panel:#263c31;--gold:#f5d58b;--cream:#fffdf5;--ink:#17251f;--red:#b52e39}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#304b3c,var(--bg) 60%);color:#fff;font-family:Tahoma,Arial,sans-serif;min-height:100vh;padding:22px 14px 36px}
+main{max-width:540px;margin:auto}.brand{text-align:center;color:var(--gold);font-size:25px;font-weight:800;letter-spacing:1px;margin:12px 0 5px}.sub{text-align:center;color:#d7c9a4;font-size:12px;margin-bottom:22px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}.team{background:var(--cream);color:var(--ink);border-radius:19px;padding:15px 12px;box-shadow:0 8px 24px #0003;text-align:center;min-width:0}.suit{font-size:32px;margin-bottom:8px}.red{color:var(--red)}.team input{width:100%;border:1px solid #ded8c7;border-radius:9px;padding:10px 6px;text-align:center;font:inherit;font-size:14px;background:#fff}.score{font-size:52px;font-weight:800;margin:12px 0;color:var(--ink);font-variant-numeric:tabular-nums}
+button{font:inherit;border:0;border-radius:10px;padding:11px 12px;cursor:pointer;font-weight:700}.controls{display:flex;gap:7px;justify-content:center}.plus{background:#28784d;color:white;min-width:48px}.minus{background:#b52e39;color:white;min-width:48px}.five{width:100%;margin-top:8px;background:#ece8dc;color:var(--ink)}
+.panel{background:var(--panel);border:1px solid #ffffff12;border-radius:16px;padding:15px;margin-top:15px}.panel h2{font-size:14px;color:var(--gold);text-align:center;margin:0 0 12px}.targets{display:flex;gap:7px}.targets button{flex:1;background:#405849;color:#fff;padding:10px 4px}.targets button.active{background:var(--gold);color:var(--ink)}.winner{color:var(--gold);font-weight:800;text-align:center;margin-top:12px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.secondary{background:#e9e2cf;color:var(--ink)}.outline{background:transparent;color:#f5d58b;border:1px solid #f5d58b}.history{margin-top:17px}.history h2{color:var(--gold);font-size:15px}.entry{background:#203329;border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:#eee;display:flex;justify-content:space-between;gap:8px}.muted{color:#b8c4ba;text-align:center;font-size:12px;margin-top:12px}.notice{font-size:11px;color:#c7cfc7;text-align:center;margin-top:15px;line-height:1.8}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">♠ SCORE CARDS ♥</div>
+  <div class="sub">امتیازشمار بازی‌های دوستانه</div>
+  <section class="cards">
+    <article class="team">
+      <div class="suit red">♠</div>
+      <input id="nameA" maxlength="24" value="تیم اول" aria-label="نام تیم اول">
+      <div class="score" id="scoreA">0</div>
+      <div class="controls"><button class="minus" onclick="changeScore('A',-1)">−۱</button><button class="plus" onclick="changeScore('A',1)">+۱</button></div>
+      <button class="five" onclick="changeScore('A',5)">+۵ امتیاز</button>
+      <button class="five" onclick="changeScore('A',10)">+۱۰ امتیاز</button>
+    </article>
+    <article class="team">
+      <div class="suit">♣</div>
+      <input id="nameB" maxlength="24" value="تیم دوم" aria-label="نام تیم دوم">
+      <div class="score" id="scoreB">0</div>
+      <div class="controls"><button class="minus" onclick="changeScore('B',-1)">−۱</button><button class="plus" onclick="changeScore('B',1)">+۱</button></div>
+      <button class="five" onclick="changeScore('B',5)">+۵ امتیاز</button>
+      <button class="five" onclick="changeScore('B',10)">+۱۰ امتیاز</button>
+    </article>
+  </section>
+  <section class="panel">
+    <h2>امتیاز هدف</h2>
+    <div class="targets">
+      <button data-target="50" onclick="setTarget(50)">۵۰</button>
+      <button data-target="100" class="active" onclick="setTarget(100)">۱۰۰</button>
+      <button data-target="200" onclick="setTarget(200)">۲۰۰</button>
+      <button data-target="0" onclick="setTarget(0)">آزاد</button>
+    </div>
+    <div class="winner" id="winner">هدف بازی: ۱۰۰ امتیاز</div>
+  </section>
+  <div class="actions">
+    <button class="secondary" onclick="saveRound()">ثبت این دست</button>
+    <button class="outline" onclick="newGame()">بازی جدید</button>
+  </div>
+  <section class="history">
+    <h2>📜 تاریخچه دست‌ها</h2>
+    <div id="historyList"><div class="muted">هنوز دستی ثبت نشده است.</div></div>
+    <button class="outline" style="width:100%;margin-top:8px" onclick="clearHistory()">پاک کردن تاریخچه</button>
+  </section>
+  <div class="notice">امتیازها و تاریخچه روی همین دستگاه ذخیره می‌شوند و برای استفاده نیازی به اینترنت ندارید.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let state={a:0,b:0,target:100,history:[]};
+try{const saved=JSON.parse(localStorage.getItem('scoreCardsState')||'null');if(saved)state={...state,...saved}}catch(e){}
+function fa(n){return Number(n).toLocaleString('fa-IR')}
+function persist(){localStorage.setItem('scoreCardsState',JSON.stringify(state));render()}
+function changeScore(team,delta){const key=team.toLowerCase();state[key]=Math.max(0,(Number(state[key])||0)+delta);persist()}
+function setTarget(n){state.target=n;persist()}
+function names(){return [($('nameA').value.trim()||'تیم اول'),($('nameB').value.trim()||'تیم دوم')]}
+function render(){
+ $('scoreA').textContent=fa(state.a);$('scoreB').textContent=fa(state.b);
+ document.querySelectorAll('[data-target]').forEach(b=>b.classList.toggle('active',Number(b.dataset.target)===state.target));
+ const [a,b]=names();let msg=state.target?'هدف بازی: '+fa(state.target)+' امتیاز':'بدون محدودیت امتیاز';
+ if(state.target && (state.a>=state.target||state.b>=state.target)){msg=state.a===state.b?'بازی مساوی شد!':'🏆 برنده: '+(state.a>state.b?a:b)}
+ $('winner').textContent=msg;
+ const list=$('historyList');list.innerHTML='';
+ if(!state.history.length){list.innerHTML='<div class="muted">هنوز دستی ثبت نشده است.</div>';return}
+ state.history.slice().reverse().forEach((h,i)=>{const d=document.createElement('div');d.className='entry';const l=document.createElement('span');l.textContent=h.aName+' '+fa(h.a)+' – '+fa(h.b)+' '+h.bName;const r=document.createElement('span');r.textContent=h.date;d.append(l,r);list.append(d)})
+}
+function saveRound(){const [aName,bName]=names();state.history.push({a:state.a,b:state.b,aName,bName,date:new Date().toLocaleString('fa-IR')});persist()}
+function newGame(){if(!confirm('امتیازهای فعلی صفر شوند؟ تاریخچه حفظ می‌شود.'))return;state.a=0;state.b=0;persist()}
+function clearHistory(){if(!confirm('همه تاریخچه پاک شود؟'))return;state.history=[];persist()}
+$('nameA').addEventListener('input',()=>{localStorage.setItem('scoreCardsNames',JSON.stringify(names()));render()});
+$('nameB').addEventListener('input',()=>{localStorage.setItem('scoreCardsNames',JSON.stringify(names()));render()});
+try{const n=JSON.parse(localStorage.getItem('scoreCardsNames')||'null');if(n){$('nameA').value=n[0];$('nameB').value=n[1]}}catch(e){}
+render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
